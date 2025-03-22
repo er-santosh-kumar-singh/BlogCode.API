@@ -21,7 +21,25 @@ namespace BlogCode.API.Repositories.Implementation
 
         public async Task<IEnumerable<Category>> GetAllCategories()
         {
-           return await _dbContext.Categories.ToListAsync();
+            return await _dbContext.Categories.ToListAsync();
+        }
+
+        public Task<Category> GetCategoryById(Guid id)
+        {
+            return _dbContext.Categories.FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<Category> UpdateCategoryAsync(Category category)
+        {
+            var getCategoryFromDb = await _dbContext.Categories.FirstOrDefaultAsync(u => u.Id == category.Id);
+            if (getCategoryFromDb != null)
+            {
+                _dbContext.Entry(getCategoryFromDb).CurrentValues.SetValues(category);
+                await _dbContext.SaveChangesAsync();
+                return category;
+            }
+            return null;
+
         }
     }
 }

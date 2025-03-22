@@ -41,7 +41,7 @@ namespace BlogCode.API.Controllers
                 UrlHandle = categoryFromDb.UrlHandle
             };
 
-            return Ok(response);       
+            return Ok(response);
 
         }
 
@@ -50,10 +50,60 @@ namespace BlogCode.API.Controllers
         {
             var categories = await _categoryRespository.GetAllCategories();
             var response = new List<CategoryDto>();
-            foreach(var category in categories)
+            foreach (var category in categories)
             {
                 response.Add(new CategoryDto() { Id = category.Id, Name = category.Name, UrlHandle = category.UrlHandle });
             }
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetCategory([FromRoute] Guid id)
+        {
+            if (id == Guid.Empty) return BadRequest();
+
+            var getCategory = await _categoryRespository.GetCategoryById(id);
+
+            if (getCategory == null) return NotFound();
+
+            var response = new CategoryDto
+            {
+                Id = getCategory.Id,
+                Name = getCategory.Name,
+                UrlHandle = getCategory.UrlHandle
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> EditCategory([FromRoute] Guid id, [FromBody] UpdateCategoryRequestDto request)
+        {
+            if (string.IsNullOrEmpty(id.ToString()) || string.IsNullOrEmpty(request.Name))
+            {
+                return BadRequest();
+            }
+            // Convert Dto to Domain model
+
+            var category = new Category
+            {
+                Id = id,
+                Name = request.Name,
+                UrlHandle = request.UrlHandle
+            };
+
+            var getCategory = await _categoryRespository.UpdateCategoryAsync(category);
+            if (getCategory == null) return NotFound();
+
+            // Convert Domain model to Dto
+            var response = new CategoryDto
+            {
+                Id = getCategory.Id,
+                Name = getCategory.Name,
+                UrlHandle = getCategory.UrlHandle
+            };
             return Ok(response);
         }
     }
