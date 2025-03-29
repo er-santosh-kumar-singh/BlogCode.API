@@ -18,7 +18,7 @@ namespace BlogCode.API.Repositories.Implementation
             await _dbContext.SaveChangesAsync();
             return category;
         }
-
+        
         public async Task<IEnumerable<Category>> GetAllCategories()
         {
             return await _dbContext.Categories.ToListAsync();
@@ -41,5 +41,18 @@ namespace BlogCode.API.Repositories.Implementation
             return null;
 
         }
+
+        public async Task<Category?> DeleteAsync(Guid id)
+        {
+            var checkCategoryInDb = await _dbContext.Categories.FirstOrDefaultAsync(u => u.Id == id);
+            if(checkCategoryInDb == null)
+            {
+                return null;
+            }
+            _dbContext.Categories.Remove(checkCategoryInDb);
+            await _dbContext.SaveChangesAsync();
+            return checkCategoryInDb;
+        }
+
     }
 }

@@ -106,5 +106,25 @@ namespace BlogCode.API.Controllers
             };
             return Ok(response);
         }
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
+        {
+            if(id == null)
+            {
+                return BadRequest();
+            }
+            var getCategory = await _categoryRespository.DeleteAsync(id);
+            if (getCategory == null) return NotFound();
+            // Convert Domain model to DTO
+            var response = new CategoryDto()
+            {
+                Id = getCategory.Id,
+                Name= getCategory.Name,
+                UrlHandle = getCategory.UrlHandle
+            };
+            return Ok(response);
+        }
     }
 }
