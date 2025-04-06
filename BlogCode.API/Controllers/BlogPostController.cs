@@ -78,5 +78,56 @@ namespace BlogCode.API.Controllers
             
             return Ok(_response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            try
+            {
+                var getResponse = await _blogPostRepository.GetAllAsync();
+                // Convert Domain model to Dto
+                var response = new List<BlogPostDto>();
+                
+                foreach (var post in getResponse)
+                {
+                    response.Add(new BlogPostDto()
+                    {
+                        Id = post.Id,
+                        Title = post.Title,
+                        Content = post.Content,
+                        Author = post.Author,
+                        FeaturedImageUrl = post.FeaturedImageUrl,
+                        IsVisible = post.IsVisible,
+                        PublishedDate = post.PublishedDate,
+                        ShortDescription = post.ShortDescription,
+                        UrlHandle = post.UrlHandle
+                    });
+                }
+
+                if(response != null)
+                {
+                    _response.Result = response;
+                    _response.IsSuccess = true;
+                    _response.Message = "Success";
+                    return Ok(_response);
+                }
+                else
+                {
+                    _response.Result = null;
+                    _response.IsSuccess = false;
+                    _response.Message = "NotFound";                    
+                    return NotFound(_response);
+                }
+               
+            }
+            catch(Exception ex)
+            {
+                _response.Result = null;
+                _response.IsSuccess = false;
+                _response.Message = "Error occured";
+                _response.ErrorMessage.Add(ex.Message);
+            }
+            return Ok(_response);
+        }
     }
 }

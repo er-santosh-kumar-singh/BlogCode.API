@@ -1,6 +1,7 @@
 ﻿using BlogCode.API.Data;
 using BlogCode.API.Models.Domain;
 using BlogCode.API.Repositories.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlogCode.API.Repositories.Implementation
 {
@@ -17,6 +18,11 @@ namespace BlogCode.API.Repositories.Implementation
             await _dbContext.BlogPosts.AddAsync(blogPost);
             await _dbContext.SaveChangesAsync();
             return blogPost;
+        }
+
+        public async Task<IEnumerable<BlogPost>> GetAllAsync()
+        {
+           return await _dbContext.BlogPosts.ToListAsync();
         }
     }
 }
