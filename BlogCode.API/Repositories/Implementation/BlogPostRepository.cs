@@ -22,7 +22,31 @@ namespace BlogCode.API.Repositories.Implementation
 
         public async Task<IEnumerable<BlogPost>> GetAllAsync()
         {
-           return await _dbContext.BlogPosts.ToListAsync();
+            return await _dbContext.BlogPosts.Include(x => x.Categories).ToListAsync();
+        }
+
+        public async Task<BlogPost> GetBlogPostByIdAsync(Guid id)
+        {
+            return await _dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public async Task<BlogPost?> UpdateBlogPostAsync(BlogPost blogPost)
+        {
+            var getPostFromDb = await _dbContext.BlogPosts.Include(u => u.Categories).FirstOrDefaultAsync(u => u.Id == blogPost.Id);
+            if (getPostFromDb != null)
+            {
+                // Update the blog post
+                _dbContext.Entry(getPostFromDb).CurrentValues.SetValues(blogPost);
+
+                // Update Categories
+                getPostFromDb.Categories = blogPost.Categories;
+                await _dbContext.SaveChangesAsync();
+                return blogPost;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

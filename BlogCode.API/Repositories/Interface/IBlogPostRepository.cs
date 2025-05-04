@@ -6,5 +6,7 @@ namespace BlogCode.API.Repositories.Interface
     {
         Task<BlogPost> CreateAsync(BlogPost blogPost);
         Task<IEnumerable<BlogPost>> GetAllAsync();
+        Task<BlogPost?> GetBlogPostByIdAsync(Guid id);
+        Task<BlogPost?> UpdateBlogPostAsync(BlogPost blogPost);
     }
 }

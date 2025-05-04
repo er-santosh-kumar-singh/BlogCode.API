@@ -1,3 +1,5 @@
+using AutoMapper;
+using BlogCode.API;
 using BlogCode.API.Data;
 using BlogCode.API.Repositories.Implementation;
 using BlogCode.API.Repositories.Interface;
@@ -21,6 +23,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("BlogCodeConnectionString"))
 );
+
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
