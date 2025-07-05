@@ -205,6 +205,52 @@ namespace BlogCode.API.Controllers
             return Ok(_response);
         }
 
+
+        [HttpGet]
+        [Route("{urlHandle}")]
+        public async Task<IActionResult> GetBlogPostByUrlHandle([FromRoute] string urlHandle)
+        {
+            if (string.IsNullOrEmpty(urlHandle))
+            {
+                return BadRequest();
+            }
+            // call the respository
+            var post = await _blogPostRepository.GetBlogPostByUrlHandleAsync(urlHandle);
+            if (post == null) { return NotFound(); }
+
+            //Convert Doamin model to DTO
+
+            BlogPostDto response = new BlogPostDto()
+            {
+                Id = post.Id,
+                Title = post.Title,
+                Content = post.Content,
+                Author = post.Author,
+                FeaturedImageUrl = post.FeaturedImageUrl,
+                IsVisible = post.IsVisible,
+                PublishedDate = post.PublishedDate,
+                ShortDescription = post.ShortDescription,
+                UrlHandle = post.UrlHandle,
+                Categories = post.Categories?.Select(x => new CategoryDto()
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    UrlHandle = x.UrlHandle
+                }).ToList()
+            };
+
+            if (response != null)
+            {
+                _response.Result = response;
+                _response.IsSuccess = true;
+                _response.Message = "Success";
+                return Ok(_response);
+            }
+
+            return Ok(_response);
+        }
+
+
         [HttpPut]
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateBlogPostById([FromRoute] Guid id, [FromBody] UpdateBlogPostRequestDto request)

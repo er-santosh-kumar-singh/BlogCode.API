@@ -30,6 +30,10 @@ namespace BlogCode.API.Repositories.Implementation
             return await _dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        public async Task<BlogPost> GetBlogPostByUrlHandleAsync(string urlHandle)
+        {
+            return await _dbContext.BlogPosts.Include(x => x.Categories).FirstOrDefaultAsync(u => u.UrlHandle == urlHandle);
+        }
         public async Task<BlogPost?> UpdateBlogPostAsync(BlogPost blogPost)
         {
             var getPostFromDb = await _dbContext.BlogPosts.Include(u => u.Categories).FirstOrDefaultAsync(u => u.Id == blogPost.Id);
